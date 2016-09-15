@@ -27,9 +27,9 @@ def index():
         dt_str, count = line.rsplit(' ', 1)
         count = int(count)
         dt_str_count_pairs.append([dt_str, count])
-      render_list.append({'points': dt_str_count_pairs})
+      render_list.append({'points': [dt_str_count_pairs]})
 
-  return flask.render_template('index.html', render_list=json.dumps(render_list, indent=2))
+  return flask.render_template('index.html', render_list=render_list)
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=port, debug=(port != 80))

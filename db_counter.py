@@ -41,7 +41,8 @@ while True:
         rows = db.query(query)
 
         out_path = os.path.join('data', app_name, '{}.txt'.format(table_name))
-        write_rotate(out_path, '{} {}\n'.format(datetime.utcnow(), rows[0]['count']))
+        out_line = '{} {}\n'.format(datetime.utcnow(), rows[0]['count'])
+        write_rotate(out_path, out_line)
   except Exception as e:
     line = u'exception: {}; {}'.format(type(e).__name__, e.message).encode('utf8')
     write_rotate('errors.txt', line)
