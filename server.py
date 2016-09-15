@@ -25,7 +25,7 @@ def render_graphs(app_name):
     return 'bad app name', 400
 
   render_list = [{'html': '<h2>{}</h2>'.format(app_name)}]
-  for path in glob.glob(os.path.join('data', app_name, '*.txt')):
+  for path in sorted(glob.glob(os.path.join('data', app_name, '*.txt'))):
     table_name = os.path.basename(path.rsplit('.', 1)[0])
     render_list.append({'html': '<h3>{}</h3>'.format(table_name)})
 
@@ -36,8 +36,9 @@ def render_graphs(app_name):
       dt_str, count = line.rsplit(' ', 1)
       count = int(count)
       dt_str_count_pairs.append([dt_str, count])
-    render_list.append({'points': [dt_str_count_pairs]})
-  return flask.render_template('render_graphs.html', render_list=render_list)
+    render_list.append({'points': [dt_str_count_pairs], 'show_lines': True})
+  render_list_str = json.dumps(render_list)
+  return flask.render_template('render_graphs.html', render_list=render_list_str)
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=port, debug=(port != 80))

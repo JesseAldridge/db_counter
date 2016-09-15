@@ -29,8 +29,14 @@ while True:
       query = 'SELECT * FROM pg_catalog.pg_tables'
       table_rows = db.query(query)
 
-      for table_row in table_rows:
-        table_name = table_row['tablename']
+      def should_check_table(table_name):
+        if table_name == 'pg_locks':
+          return True
+        return not(table_name.startswith('pg_') or table_name.startswith('sql_'))
+
+      table_names = [table_row['tablename'] for table_row in table_rows if
+                     should_check_table(table_row['tablename'])] + ['pg_locks']
+      for table_name in table_names:
         if table_name.startswith('pg_') and table_name != 'pg_locks':
           continue
         if table_name.startswith('sql_'):
