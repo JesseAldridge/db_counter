@@ -99,7 +99,7 @@ function plot_data(graph_data) {
       yaxis: {
         axisLabel: ylabel,
         tickFormatter: function(val, axis) {
-          return val.toFixed(num_digits)
+          return val.toLocaleString()
         }
       },
       xaxis:xaxis_obj
