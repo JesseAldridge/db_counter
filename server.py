@@ -1,7 +1,10 @@
 import sys, glob, os, json, re
+import functools
 
 import flask
+from flask import Response, request
 
+import secrets
 
 app = flask.Flask(__name__)
 port = int(sys.argv[1]) if len(sys.argv) == 2 else 80
@@ -9,7 +12,27 @@ port = int(sys.argv[1]) if len(sys.argv) == 2 else 80
 app.jinja_env.variable_start_string='{[{'
 app.jinja_env.variable_end_string='}]}'
 
+
+def check_auth(username, password):
+    return username == secrets.server_username and password == secrets.server_password
+
+def authenticate():
+    return flask.Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 @app.route('/')
+@requires_auth
 def index():
   lines = []
   for app_name in os.listdir('data'):
@@ -20,6 +43,7 @@ def index():
 
 
 @app.route('/render_graphs/<app_name>')
+@requires_auth
 def render_graphs(app_name):
   if not re.match('^[a-zA-Z0-9\-_]+$', app_name):
     return 'bad app name', 400
