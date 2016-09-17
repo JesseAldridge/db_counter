@@ -43,7 +43,7 @@ def index():
 
 
 @app.route('/render_graphs/<app_name>')
-@requires_auth
+# @requires_auth
 def render_graphs(app_name):
   if not re.match('^[a-zA-Z0-9\-_]+$', app_name):
     return 'bad app name', 400
