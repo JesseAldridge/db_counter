@@ -32,7 +32,7 @@ def requires_auth(f):
     return decorated
 
 @app.route('/')
-@requires_auth
+# @requires_auth
 def index():
   lines = []
   for app_name in os.listdir('data'):
