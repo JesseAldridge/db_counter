@@ -1,4 +1,4 @@
-import os, shutil, time, traceback
+import os, shutil, time, traceback, subprocess
 from datetime import datetime
 
 import records
@@ -19,9 +19,13 @@ if not os.path.exists('data'):
 
 while True:
   try:
-    for app_name, db_url_with_creds in secrets.app_db_tuples:
+    for app_name in secrets.app_names:
       print 'app_name:', app_name
-      db = records.Database(db_url_with_creds)
+      proc = subprocess.Popen(
+          'heroku config:get ALEMBIC_DATABASE_URL --app {}'.format(app_name).split(),
+          stdout=subprocess.PIPE)
+      _db_url_with_creds = proc.communicate()[0]
+      db = records.Database(_db_url_with_creds)
 
       if not os.path.exists(os.path.join('data', app_name)):
         os.mkdir(os.path.join('data', app_name))
